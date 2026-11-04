@@ -68,30 +68,52 @@
 ```
 PicFlow/
 ├── PicFlow.xcodeproj/                  # 工程文件（由脚本生成，可直接打开）
-├── .gitignore                          # 忽略 DerivedData / xcuserdata / pycache
+├── .github/workflows/ci.yml            # CI：macOS 真编译 + 三平台 C 核心测试
+├── .gitignore                          # 忽略 DerivedData / xcuserdata / build
 ├── README.md                           # 本文档
+├── AI_ASSISTED_DEV.md                  # AI 辅助开发记录（问题→定位→修复）
+├── core/                               # ★ 平台无关纯 C 核心层（Windows 可编译可测）
+│   ├── picflow_layout.h / .c           #   瀑布流布局算法（最短列优先）
+│   ├── picflow_paging.h / .c           #   分页加载状态机
+│   ├── picflow_cache.h / .c            #   LRU 缓存 + 内存预算决策器
+│   ├── picflow_palette.h / .c          #   HSL 配色引擎（色彩和谐数学模型）
+│   └── picflow_catalog.h / .c          #   自研图库（零外部 API）
+├── tests/                              # ★ 可在 Windows 直接运行的测试
+│   ├── picflow_test.h                  #   自研零依赖测试框架
+│   ├── test_layout.c / test_paging.c
+│   ├── test_cache.c / test_palette.c
+│   └── test_mock_server.py             #   图库服务集成测试（28 项）
 ├── tools/
-│   └── generate_project.py             # 工程生成脚本（含 UUID 唯一性自检）
-└── PicFlow/
+│   ├── verify_all.py                   # ★ 一键验证全部（面试演示用）
+│   ├── run_tests.py                    # C 核心测试运行器
+│   ├── check_objc.py                   # Objective-C 静态自检
+│   ├── generate_project.py             # 工程生成脚本（含 UUID 唯一性自检）
+│   ├── mock_server.py                  # ★ 自研图库服务（零依赖）
+│   ├── png_writer.py                   # ★ 手写 PNG 编码器（不用 Pillow）
+│   └── preview/preview_svg.c           # ★ 布局可视化工具
+├── docs/
+│   └── WINDOWS_VERIFY.md               # 无 Mac 环境下的验证指南
+└── PicFlow/                            # ObjC / UIKit 层
     ├── main.m                          # 程序入口
     ├── AppDelegate.h / .m              # 全局配置、内存告警监听
     ├── SceneDelegate.h / .m            # 窗口与根控制器装配
     ├── Models/                         # ── Model 层：纯数据，无 UI 依赖
     │   └── PFPhotoItem.h / .m
     ├── Network/                        # ── Network 层：所有网络出口收口于此
-    │   └── PFNetworkManager.h / .m
+    │   └── PFNetworkManager.h / .m     #   NSURLSession 封装 + 二进制下载通道
     ├── ViewModels/                     # ── ViewModel 层：业务逻辑与状态
-    │   └── PFGalleryViewModel.h / .m
+    │   └── PFGalleryViewModel.h / .m   #   复用 C 层分页状态机
     ├── Views/                          # ── View 层：可复用 UI 组件
-    │   ├── PFWaterfallLayout.h / .m    # 自定义瀑布流布局
-    │   └── PFPhotoCell.h / .m          # 瀑布流 Cell
+    │   ├── PFWaterfallLayout.h / .m    #   自定义瀑布流布局（调用 C 引擎）
+    │   ├── PFPhotoCell.h / .m          #   瀑布流 Cell
+    │   └── PFArtworkRenderer.h / .m    #   ★ 程序化图片生成（Core Graphics）
     ├── Controllers/                    # ── Controller 层：组装 View + ViewModel
     │   ├── PFGalleryViewController.h / .m
     │   └── PFPhotoDetailViewController.h / .m
     ├── Utils/                          # ── 工具层：日志、缓存、图片加载
-    │   ├── PFLog.h / .m                # 统一日志
-    │   ├── PFImageCache.h / .m         # NSCache 内存缓存
-    │   └── PFImageLoader.h / .m        # 三级加载链路 + 任务取消
+    │   ├── PFLog.h / .m                #   统一日志
+    │   ├── PFImageCache.h / .m         #   NSCache 内存缓存
+    │   └── PFImageLoader.h / .m        #   双通道加载 + C 层内存预算
     └── Resources/
         └── Info.plist
 ```
@@ -961,11 +983,11 @@ git tag                                 # 展示版本标签
 
 > **项目名称**：PicFlow — 高性能图片瀑布流客户端（Objective-C / UIKit / MVVM）
 >
-> • 为实现轻量级图片浏览与瀑布流展示，基于 **Objective-C** 与 **UIKit** 采用 **MVVM** 架构完成全量纯代码开发（零 Storyboard），通过自定义 `UICollectionView` 布局引擎实现最短列优先的高性能瀑布流，并引入 **Auto Layout** 与安全区锚定完成 iPhone / iPad 多机型适配。
+> • 为实现轻量级图片浏览与瀑布流展示，基于 **Objective-C** 与 **UIKit** 采用 **MVVM** 架构完成全量纯代码开发（零 Storyboard），将瀑布流布局算法、分页状态机、LRU 缓存抽象为可跨平台编译的 C 核心层并以自定义 `UICollectionView` 布局驱动最短列优先排布，配合 **Auto Layout** 与安全区锚定完成 iPhone / iPad 多机型适配。
 >
-> • 针对图片列表滚动时的内存与卡顿问题，基于 **NSURLSession** 封装三级图片加载链路（NSCache 内存缓存 → 磁盘缓存 → 网络下载），配合复用标识取消、过期回调校验与后台解码完成**性能优化**，使长时间连续滚动无明显掉帧、内存占用稳定在 60MB 阈值内。
+> • 针对图片列表滚动时的内存与卡顿问题，基于 **NSURLSession** 封装三级图片加载链路（NSCache 内存缓存 → 磁盘缓存 → 网络下载），以自研 HSL 配色引擎 + Core Graphics 程序化生成替代外部图源，配合复用标识取消、过期回调校验与后台解码完成**性能优化**，并将内存占用硬约束在 60MB 阈值内。
 >
-> • 借助 **AI 辅助开发**产出基础 UI 代码后，通过 Xcode **断点调试**、异常断点与 LLDB 工具链定位并修复约束冲突、异步回调时序错乱及 block 循环引用等 4 类典型缺陷，并按功能分支模型与 Conventional Commits 规范管理代码。
+> • 借助 **AI 辅助开发**产出基础 UI 代码后，通过 Xcode **断点调试**、异常断点与 LLDB 工具链定位并修复约束冲突、异步回调时序错乱及 block 循环引用等 4 类典型缺陷；以跨平台单元测试与 SVG 布局可视化持续验证核心算法，并按功能分支模型与 Conventional Commits 规范管理代码。
 
 ### 4.2 三个 Bullet 的设计说明（面试官会追问，你要答得出来）
 
@@ -978,12 +1000,12 @@ git tag                                 # 展示版本标签
 ### 4.3 严格三句话版本（如果简历空间紧张）
 
 ```
-• 基于 Objective-C + UIKit 采用 MVVM 架构纯代码开发图片瀑布流 App，自定义 UICollectionView 布局引擎实现最短列优先排布，
-  以 Auto Layout 与安全区锚定完成 iPhone/iPad 多机型适配；
-• 封装 NSURLSession 三级图片加载链路（NSCache 内存缓存 + 磁盘缓存 + 网络下载），结合复用取消与过期回调校验完成性能优化，
-  内存占用稳定在 60MB 内；
+• 基于 Objective-C + UIKit 采用 MVVM 架构纯代码开发图片瀑布流 App，将布局算法与分页状态机抽象为跨平台可编译的 C 核心层，
+  以自定义 UICollectionView 布局实现最短列优先排布，并用 Auto Layout 与安全区锚定完成 iPhone/iPad 多机型适配；
+• 封装 NSURLSession 三级图片加载链路（NSCache 内存缓存 + 磁盘缓存 + 网络下载），以自研 HSL 配色引擎程序化生成图片替代外部图源，
+  结合复用取消与过期回调校验完成性能优化，内存占用稳定在 60MB 内；
 • 使用 AI 辅助开发基础 UI 代码后，通过断点调试与 LLDB 工具链定位并修复约束冲突、异步时序错乱、循环引用等 4 类缺陷，
-  并以功能分支与规范提交信息管理代码。
+  并以跨平台单元测试与布局可视化持续验证核心算法，按功能分支与规范提交信息管理代码。
 ```
 
 ### 4.4 写作提示
@@ -1141,7 +1163,7 @@ python tools/generate_project.py
 | 部署目标 | iOS 13.0 |
 | 设备族 | iPhone + iPad（`TARGETED_DEVICE_FAMILY = 1,2`） |
 | 依赖 | 无第三方库，零 CocoaPods |
-| 数据源 | picsum.photos 公开示例图库，无需 API Key |
+| 数据源 | **零外部依赖**：默认本地程序化生成（Core Graphics 绘制），可选切换到自研 mock server |
 
 ### 已知可优化项（面试时主动说是加分项）
 

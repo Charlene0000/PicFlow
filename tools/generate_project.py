@@ -18,6 +18,7 @@ import collections
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_NAME = "PicFlow"
 SOURCE_DIR = os.path.join(ROOT, PROJECT_NAME)
+CORE_DIR = os.path.join(ROOT, "core")
 XCODEPROJ = os.path.join(ROOT, PROJECT_NAME + ".xcodeproj")
 
 _used_uuids = set()
@@ -40,21 +41,34 @@ def json_str(s):
 
 
 def collect_sources():
-    """返回 (源文件列表, 头文件列表, 资源文件列表)，路径相对 ROOT。"""
+    """
+    收集需要加入工程的源文件。
+    返回 (源文件列表, 头文件列表, 资源文件列表)，路径相对 ROOT。
+
+    core/ 下的纯 C 源文件也要加入编译 —— ObjC 层通过 C 接口调用它们，
+    这是「单一实现、iOS 与测试共用」的关键。
+    """
     sources, headers, resources = [], [], []
-    for dirpath, dirnames, filenames in os.walk(SOURCE_DIR):
-        dirnames[:] = [d for d in dirnames if not d.startswith('.')]
-        for fn in sorted(filenames):
-            if fn.startswith('.'):
-                continue
-            full = os.path.join(dirpath, fn)
-            rel = os.path.relpath(full, ROOT).replace("\\", "/")
-            if fn.endswith(".m"):
-                sources.append(rel)
-            elif fn.endswith(".h"):
-                headers.append(rel)
-            elif fn.endswith((".plist", ".xcassets", ".storyboard", ".xib")):
-                resources.append(rel)
+
+    def scan(base_dir, prefix):
+        for dirpath, dirnames, filenames in os.walk(base_dir):
+            dirnames[:] = [d for d in dirnames if not d.startswith('.')]
+            for fn in sorted(filenames):
+                if fn.startswith('.'):
+                    continue
+                full = os.path.join(dirpath, fn)
+                rel = os.path.relpath(full, ROOT).replace("\\", "/")
+                if fn.endswith(".m") or fn.endswith(".c"):
+                    sources.append(rel)
+                elif fn.endswith(".h"):
+                    headers.append(rel)
+                elif fn.endswith((".plist", ".xcassets", ".storyboard", ".xib")):
+                    resources.append(rel)
+
+    scan(SOURCE_DIR, "app")
+    if os.path.isdir(CORE_DIR):
+        scan(CORE_DIR, "core")
+
     return sources, headers, resources
 
 
@@ -174,7 +188,12 @@ def main():
     out.append("/* Begin PBXFileReference section */")
     for rel in sources + headers:
         name = os.path.basename(rel)
-        ftype = "sourcecode.c.objc" if name.endswith(".m") else "sourcecode.c.h"
+        if name.endswith(".m"):
+            ftype = "sourcecode.c.objc"
+        elif name.endswith(".c"):
+            ftype = "sourcecode.c.c"
+        else:
+            ftype = "sourcecode.c.h"
         out.append("\t\t%s /* %s */ = {isa = PBXFileReference; lastKnownFileType = %s; path = %s; sourceTree = \"<group>\"; };" % (
             file_refs[rel], name, ftype, json_str(name)))
     for rel in resources:
@@ -203,6 +222,8 @@ def main():
     out.append("\t\t\tisa = PBXGroup;")
     out.append("\t\t\tchildren = (")
     out.append("\t\t\t\t%s /* %s */," % (dir_uuids["PicFlow"], PROJECT_NAME))
+    if "core" in dir_uuids:
+        out.append("\t\t\t\t%s /* core */," % dir_uuids["core"])
     out.append("\t\t\t\t%s /* Products */," % id_products_group)
     out.append("\t\t\t);")
     out.append("\t\t\tsourceTree = \"<group>\";")

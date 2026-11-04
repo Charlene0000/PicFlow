@@ -1,0 +1,101 @@
+# PicFlow CI
+#
+# 解决的问题：项目开发机是 Windows，没有 macOS / Xcode，
+# 但 iOS 项目必须能在 Xcode 里编译。
+#
+# 方案：分两条流水线
+#   1. core-tests —— 在 Ubuntu / Windows / macOS 三个平台编译并运行 C 核心测试。
+#      证明跨平台可移植性 + 算法正确性有持续保障（每次 push 都跑）。
+#   2. ios-build —— 在 macOS runner 上用真实 Xcode 编译 iOS 工程。
+#      证明 ObjC + UIKit 代码能编译、能打包（产出 .app 产物）。
+#
+# 这两条流水线合起来，等价于「本地没有 Mac 也能拿到 Xcode 编译的证据」。
+
+name: PicFlow CI
+
+on:
+  push:
+    branches: [main, "feature/**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # ---------- C 核心测试：三大平台并行 ----------
+  core-tests:
+    name: C 核心测试 (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 编译并运行 C 单元测试
+        run: python tools/run_tests.py
+
+      - name: 编译并运行图库服务集成测试
+        run: python tests/test_mock_server.py
+
+      - name: 生成布局可视化（Linux/macOS 额外产出 SVG 供人工检查）
+        if: matrix.os != 'windows-latest'
+        run: |
+          mkdir -p build/preview
+          cc -std=c99 -O1 -I core tools/preview/preview_svg.c \
+             core/picflow_layout.c core/picflow_palette.c core/picflow_catalog.c \
+             -o build/preview/preview_svg -lm
+          ./build/preview/preview_svg build/preview/iphone.svg 2 375 24
+          ./build/preview/preview_svg build/preview/ipad.svg 3 768 24
+
+      - name: 上传布局可视化产物
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: layout-preview
+          path: build/preview/*.svg
+
+  # ---------- iOS 真机编译（macOS runner） ----------
+  ios-build:
+    name: iOS 工程编译 (Xcode ${{ matrix.xcode }})
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        xcode: ["15.4", "16.2"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 选择 Xcode 版本
+        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
+
+      - name: 打印工具链版本
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: 生成 Xcode 工程
+        run: python3 tools/generate_project.py
+
+      - name: 编译 iOS 工程（模拟器目标，无需签名）
+        run: |
+          xcodebuild \
+            -project PicFlow.xcodeproj \
+            -scheme PicFlow \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: 上传编译产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-build-${{ matrix.xcode }}
+          path: build/Debug-iphonesimulator/PicFlow.app
+          if-no-files-found: ignore
