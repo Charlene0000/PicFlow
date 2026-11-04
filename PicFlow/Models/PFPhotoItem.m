@@ -4,41 +4,52 @@
 //
 
 #import "PFPhotoItem.h"
+#include "../../core/picflow_catalog.h"
 
 @implementation PFPhotoItem
+
++ (instancetype)itemAtCatalogIndex:(NSInteger)index {
+    if (index < 0 || index >= pf_catalog_count()) {
+        return nil;
+    }
+    PFCatalogEntry entry;
+    pf_catalog_entry_at((int)index, &entry);
+
+    PFPhotoItem *item = [[PFPhotoItem alloc] init];
+    item.identifier  = [NSString stringWithFormat:@"pf-%d", entry.id];
+    item.title       = [NSString stringWithFormat:@"%@", entry.title];
+    item.author      = [NSString stringWithFormat:@"%@", entry.author];
+    item.seed        = entry.seed;
+    item.catalogIndex = index;
+    item.source      = PFPhotoSourceProgrammatic;
+
+    // 像素尺寸按 2 倍屏宽估算，保证缩略图清晰；
+    // 真实绘制尺寸由列宽决定，宽高比来自图库规格。
+    CGFloat baseWidth = 640.0;
+    item.pixelWidth  = baseWidth;
+    item.pixelHeight = baseWidth * entry.aspect_ratio;
+    return item;
+}
 
 + (instancetype)itemWithDictionary:(NSDictionary *)dict {
     if (![dict isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
     PFPhotoItem *item = [[PFPhotoItem alloc] init];
-    item.identifier = [dict[@"id"] description] ?: @"";
-
-    NSString *author = dict[@"author"];
-    item.author = [author isKindOfClass:[NSString class]] ? author : @"Unknown";
-
-    // 标题用作者 + ID 组合，保证列表里每一项都有可读文本。
-    item.title = [NSString stringWithFormat:@"%@ · #%@", item.author, item.identifier];
+    NSString *identifier = dict[@"id"];
+    item.identifier = identifier.length > 0 ? [identifier description] : [[NSUUID UUID] UUIDString];
+    item.title  = dict[@"title"] ?: item.identifier;
+    item.author = dict[@"author"] ?: @"Unknown";
 
     NSNumber *width = dict[@"width"];
     NSNumber *height = dict[@"height"];
-    item.pixelWidth = width.doubleValue > 0 ? width.doubleValue : 1000;
-    item.pixelHeight = height.doubleValue > 0 ? height.doubleValue : 1000;
+    item.pixelWidth  = width.doubleValue > 0 ? width.doubleValue : 640;
+    item.pixelHeight = height.doubleValue > 0 ? height.doubleValue : 640;
 
-    NSString *urlString = dict[@"url"];
-    if ([urlString isKindOfClass:[NSString class]]) {
-        item.originURL = [NSURL URLWithString:urlString];
-    }
-    item.source = PFPhotoSourcePicsum;
+    NSNumber *seed = dict[@"seed"];
+    item.seed = seed.unsignedIntValue;
+    item.source = PFPhotoSourceRemote;
     return item;
-}
-
-- (NSURL *)thumbnailURLWithWidth:(CGFloat)width {
-    // 目标高度按原始宽高比推算，向下取整避免拉伸。
-    CGFloat height = [self estimatedHeightWithColumnWidth:width];
-    NSString *urlString = [NSString stringWithFormat:@"https://picsum.photos/id/%@/%.0f/%.0f",
-                           self.identifier, width, height];
-    return [NSURL URLWithString:urlString];
 }
 
 - (CGFloat)aspectRatio {
@@ -50,6 +61,10 @@
 
 - (CGFloat)estimatedHeightWithColumnWidth:(CGFloat)columnWidth {
     return columnWidth * [self aspectRatio];
+}
+
+- (NSString *)cacheKeyWithColumnWidth:(CGFloat)columnWidth {
+    return [NSString stringWithFormat:@"%@-%.0f", self.identifier, columnWidth];
 }
 
 @end
