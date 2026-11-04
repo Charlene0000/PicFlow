@@ -19,7 +19,6 @@ static NSString * const kPFPhotoCellReuseID = @"PFPhotoCell";
 @property (nonatomic, strong) PFGalleryViewModel *viewModel;
 @property (nonatomic, strong) UIRefreshControl *refreshControl;
 @property (nonatomic, strong) UIActivityIndicatorView *footerSpinner;
-@property (nonatomic, strong) UILabel *emptyLabel;
 
 @end
 
@@ -42,11 +41,19 @@ static NSString * const kPFPhotoCellReuseID = @"PFPhotoCell";
 #pragma mark - UI 构建
 
 - (void)setupNavigationBar {
-    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithTitle:@"换列"
-                                                                    style:UIBarButtonItemStylePlain
-                                                                   target:self
-                                                                   action:@selector(toggleColumnCount)];
-    self.navigationItem.rightBarButtonItem = rightItem;
+    UIBarButtonItem *sourceItem =
+        [[UIBarButtonItem alloc] initWithTitle:@"本地"
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(toggleSource)];
+    sourceItem.accessibilityIdentifier = @"sourceToggle";
+    self.navigationItem.leftBarButtonItem = sourceItem;
+
+    UIBarButtonItem *columnItem = [[UIBarButtonItem alloc] initWithTitle:@"换列"
+                                                                     style:UIBarButtonItemStylePlain
+                                                                    target:self
+                                                                    action:@selector(toggleColumnCount)];
+    self.navigationItem.rightBarButtonItem = columnItem;
 }
 
 - (void)setupCollectionView {
@@ -153,6 +160,16 @@ static NSString * const kPFPhotoCellReuseID = @"PFPhotoCell";
     [self.collectionView reloadData];
 }
 
+/// 切换数据源：本地程序化生成 <-> 远程图库（NSURLSession）。
+- (void)toggleSource {
+    PFPhotoSource next = (self.viewModel.currentSource == PFPhotoSourceProgrammatic)
+                       ? PFPhotoSourceRemote
+                       : PFPhotoSourceProgrammatic;
+    [self.viewModel switchSource:next];
+    self.navigationItem.leftBarButtonItem.title = (next == PFPhotoSourceProgrammatic) ? @"本地" : @"远程";
+    PFLogInfo(@"切换数据源 -> %@", (next == PFPhotoSourceProgrammatic) ? @"本地程序化" : @"远程图库");
+}
+
 - (void)showError:(NSString *)message {
     if (!message) {
         return;
@@ -254,7 +271,7 @@ heightForItemAtIndexPath:(NSIndexPath *)indexPath
     if (!item) {
         return itemWidth;
     }
-    // 图片高度 + 标题区高度(20) + 底部留白
+    // 图片高度 + 标题区高度(20)
     CGFloat imageHeight = [item estimatedHeightWithColumnWidth:itemWidth];
     return imageHeight + 20.0;
 }

@@ -6,13 +6,13 @@
 //  为什么不直接用 UICollectionViewFlowLayout？
 //  FlowLayout 的 itemSize 是全局唯一的，没法做「每个 item 高度不同」的瀑布流；
 //  而瀑布流要求每个 item 保留原始宽高比，高度必须在拿到图片尺寸后才知道。
-//  所以这里实现 UICollectionViewLayout 的子类，自己管理 attributes 与列高。
 //
-//  核心 API（UICollectionViewLayout 要求的四个必须实现的方法）：
-//  - prepareLayout            : 计算所有 item 的 frame
-//  - collectionViewContentSize: 内容总高度
-//  - layoutAttributesForElementsInRect: 取可视区内的 attributes
-//  - layoutAttributesForItemAtIndexPath: 取单个 item 的 attributes
+//  ★ 关键架构决策：布局算法实现在 **纯 C 层**（core/picflow_layout.c），
+//    这里只做「取高度 -> 调 C 引擎 -> 转成 UICollectionViewLayoutAttributes」的转换。
+//    带来三个好处：
+//    1. 算法正确性可以在 Windows/Linux 上用 gcc 跑单元测试验证，无需 Mac；
+//    2. 有专门的 SVG 可视化工具，肉眼就能确认排布结果是对的；
+//    3. iOS 端与测试端跑的是**同一份实现**，不存在「测试对、真机不对」。
 //
 
 #import <UIKit/UIKit.h>

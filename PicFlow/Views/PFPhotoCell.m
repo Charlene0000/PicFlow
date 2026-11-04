@@ -4,6 +4,7 @@
 //
 
 #import "PFPhotoCell.h"
+#import "PFArtworkRenderer.h"
 #import "../Utils/PFImageLoader.h"
 #import "../Utils/PFLog.h"
 
@@ -81,7 +82,7 @@
     // 图片底部锚定到标题顶部。
     [self.imageView.bottomAnchor constraintEqualToAnchor:self.titleLabel.topAnchor constant:-4.0].active = YES;
 
-    // 高度约束先创建一次（激活状态为 NO），复用时只改 constant。
+    // 高度约束先创建一次（激活状态为 YES），复用时只改 constant。
     self.imageHeightConstraint = [self.imageView.heightAnchor constraintEqualToConstant:0.0];
     self.imageHeightConstraint.priority = UILayoutPriorityDefaultHigh;
     self.imageHeightConstraint.active = YES;
@@ -115,13 +116,12 @@
     CGFloat imageHeight = [item estimatedHeightWithColumnWidth:columnWidth];
     self.imageHeightConstraint.constant = imageHeight;
 
-    NSURL *thumbURL = [item thumbnailURLWithWidth:MAX(1.0, columnWidth * [UIScreen mainScreen].scale)];
-    NSString *cacheKey = [NSString stringWithFormat:@"%@-%.0f", item.identifier, columnWidth];
+    NSString *cacheKey = [item cacheKeyWithColumnWidth:columnWidth];
 
     __weak typeof(self) weakSelf = self;
 
     // 保存取消令牌：cell 被复用时 prepareForReuse 会取消这次请求。
-    self.loadToken = [[PFImageLoader sharedLoader] loadImageWithURL:thumbURL
+    self.loadToken = [[PFImageLoader sharedLoader] loadImageForItem:item
                                                             cacheKey:cacheKey
                                                            completion:^(UIImage *image) {
         // ③ 回调时校验 representedID：cell 可能已经被复用给别的 item 了。

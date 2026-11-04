@@ -60,6 +60,14 @@ typedef void (^PFNetworkFailureBlock)(NSError *error);
                                 failure:(PFNetworkFailureBlock)failure
                             cancelToken:(void (^ _Nullable)(void))cancelToken;
 
+/// 下载二进制数据（图片二进制）。
+/// 与 JSON 接口分开，是为了避免「解析失败」这类只适用于 JSON 的错误处理
+/// 污染二进制下载路径 —— 二进制数据不应被尝试 JSON 解析。
+/// @return 可取消的 task，失败时返回 nil
+- (nullable NSURLSessionDataTask *)GETData:(NSString *)urlString
+                                   success:(void (^)(NSData *data))success
+                                   failure:(PFNetworkFailureBlock)failure;
+
 @end
 
 NS_ASSUME_NONNULL_END
