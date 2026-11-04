@@ -50,6 +50,11 @@ typedef NS_ENUM(NSInteger, PFGalleryState) {
 /// 下拉刷新（重置分页）。
 - (void)refresh;
 
+/// 切换数据来源：本地程序化生成 / 远程图库（NSURLSession）。
+- (void)switchSource:(PFPhotoSource)source;
+/// 当前数据来源。
+- (PFPhotoSource)currentSource;
+
 /// 指定 indexPath 的 item。
 - (nullable PFPhotoItem *)itemAtIndexPath:(NSIndexPath *)indexPath;
 

@@ -2,14 +2,21 @@
 //  PFWaterfallLayout.m
 //  PicFlow
 //
+//  本文件是 **C 布局引擎的 Objective-C 适配层**：
+//  所有排布计算都交给 core/picflow_layout.c 完成，
+//  这里只负责 UIKit 概念与 C 概念之间的翻译。
+//
 
 #import "PFWaterfallLayout.h"
+#import "../Utils/PFLog.h"
+#include "../../core/picflow_layout.h"
 
 @interface PFWaterfallLayout ()
 /// 缓存所有 item 的 layoutAttributes，避免每次滑动都重新算（性能关键）。
 @property (nonatomic, strong) NSMutableArray<UICollectionViewLayoutAttributes *> *attributesCache;
-/// 每一列当前的最低 Y 值，用来决定下一个 item 放哪一列（最短列优先）。
-@property (nonatomic, strong) NSMutableArray<NSNumber *> *columnHeights;
+/// C 引擎算出的 frame 结果。
+@property (nonatomic, strong) NSMutableData *frameBuffer;
+/// C 引擎返回的内容总尺寸。
 @property (nonatomic, assign) CGSize calculatedContentSize;
 @end
 
@@ -24,7 +31,6 @@
         _sectionInset = UIEdgeInsetsMake(8, 8, 8, 8);
         _headerHeight = 0.0;
         _attributesCache = [NSMutableArray array];
-        _columnHeights = [NSMutableArray array];
     }
     return self;
 }
@@ -40,7 +46,6 @@
     }
 
     [self.attributesCache removeAllObjects];
-    [self.columnHeights removeAllObjects];
 
     NSInteger sectionCount = collectionView.numberOfSections;
     NSInteger columnCount = [self resolvedColumnCountForSection:0];
@@ -49,51 +54,69 @@
 
     // 顶部预留：安全区由 collectionView.contentInset 处理，这里只处理自定义 header 高度。
     CGFloat top = insets.top + self.headerHeight;
-    for (NSInteger column = 0; column < columnCount; column++) {
-        [self.columnHeights addObject:@(top)];
-    }
 
-    CGFloat usableWidth = contentWidth - insets.left - insets.right;
-    CGFloat totalSpacing = self.interitemSpacing * (columnCount - 1);
-    CGFloat itemWidth = (usableWidth - totalSpacing) / columnCount;
+    // ---- 高度提供者：C 函数指针作为 context 传给 C 引擎 ----
+    // C 引擎通过这个回调逐个询问高度，与 UICollectionViewLayoutDelegate 的语义一致。
+    // 注意：block 不捕获 self，只用 context 反解，避免不必要的引用关系。
+    PFItemHeightProvider provider = ^double (void *context, int index) {
+        PFWaterfallLayout *layout = (__bridge PFWaterfallLayout *)context;
+        UICollectionView *cv = layout.collectionView;
+        if (!cv || index < 0 || index >= (NSInteger)[cv numberOfItemsInSection:0]) {
+            return 0.0;
+        }
+        NSIndexPath *indexPath = [NSIndexPath indexPathForItem:index inSection:0];
+        CGFloat columnWidth = [layout currentColumnWidth];
+        return (double)[layout.delegate collectionView:cv
+                                                layout:layout
+                              heightForItemAtIndexPath:indexPath
+                                              itemWidth:columnWidth];
+    };
 
-    for (NSInteger section = 0; section < sectionCount; section++) {
-        NSInteger itemCount = [collectionView numberOfItemsInSection:section];
-        if (section > 0) {
-            // 多 section 时重新按当前 section 的 inset / 列数起算。
-            UIEdgeInsets sectionInsets = [self resolvedInsetForSection:section];
-            CGFloat sectionTop = [self lastColumnHeight] + sectionInsets.top;
-            [self.columnHeights removeAllObjects];
-            for (NSInteger column = 0; column < columnCount; column++) {
-                [self.columnHeights addObject:@(sectionTop)];
-            }
+    // ---- 组装 C 引擎配置 ----
+    PFWaterfallConfig config;
+    config.column_count      = (int)columnCount;
+    config.line_spacing      = (double)self.lineSpacing;
+    config.interitem_spacing = (double)self.interitemSpacing;
+    config.inset_top         = (double)insets.top;
+    config.inset_left        = (double)insets.left;
+    config.inset_bottom      = (double)insets.bottom;
+    config.inset_right       = (double)insets.right;
+    config.header_height     = (double)self.headerHeight;
+    pf_waterfall_config_validate(&config);
+
+    NSInteger itemCount = [collectionView numberOfItemsInSection:0];
+    double contentHeight = 0.0;
+
+    if (itemCount > 0) {
+        // 分配 frame 缓冲区（C 结构体数组）
+        NSUInteger byteSize = (NSUInteger)itemCount * sizeof(PFWaterfallFrame);
+        self.frameBuffer = [NSMutableData dataWithLength:byteSize];
+        PFWaterfallFrame *frames = (PFWaterfallFrame *)self.frameBuffer.mutableBytes;
+
+        int rc = pf_waterfall_layout_compute(&config,
+                                             (int)itemCount,
+                                             (double)contentWidth,
+                                             provider,
+                                             (__bridge void *)self,
+                                             frames,
+                                             &contentHeight);
+        if (rc != 0) {
+            PFLogError(@"C 布局引擎计算失败 rc=%d", rc);
+            return;
         }
 
-        for (NSInteger item = 0; item < itemCount; item++) {
-            NSIndexPath *indexPath = [NSIndexPath indexPathForItem:item inSection:section];
-
-            // 最短列优先 —— 瀑布流的核心排布策略。
-            NSInteger targetColumn = [self shortestColumnIndex];
-
-            CGFloat itemHeight = [self heightForIndexPath:indexPath itemWidth:itemWidth];
-
-            UIEdgeInsets sectionInsets = [self resolvedInsetForSection:section];
-            CGFloat x = sectionInsets.left + targetColumn * (itemWidth + self.interitemSpacing);
-            CGFloat y = [self.columnHeights[targetColumn] doubleValue];
-
+        // ---- C 结果 -> UIKit attributes ----
+        for (NSInteger i = 0; i < itemCount; i++) {
+            PFWaterfallFrame frame = frames[i];
+            NSIndexPath *indexPath = [NSIndexPath indexPathForItem:i inSection:0];
             UICollectionViewLayoutAttributes *attrs =
-            [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
-            attrs.frame = CGRectMake(x, y, itemWidth, itemHeight);
-
+                [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:indexPath];
+            attrs.frame = CGRectMake(frame.x, frame.y, frame.width, frame.height);
             [self.attributesCache addObject:attrs];
-
-            // 更新该列的最低 Y 值。
-            self.columnHeights[targetColumn] = @(CGRectGetMaxY(attrs.frame) + self.lineSpacing);
         }
     }
 
-    CGFloat bottom = [self lastColumnHeight] + insets.bottom;
-    self.calculatedContentSize = CGSizeMake(contentWidth, MAX(bottom, contentWidth > 0 ? 1 : 0));
+    self.calculatedContentSize = CGSizeMake(contentWidth, MAX(contentHeight, 1.0));
 
     PFLogDebug(@"瀑布流布局完成 items=%lu contentHeight=%.1f",
                (unsigned long)self.attributesCache.count, self.calculatedContentSize.height);
@@ -135,7 +158,6 @@
     // 但 attributesCache 需要在这里清空，否则旧数据会累积。
     if (context.invalidateEverything || context.invalidateDataSourceCounts) {
         [self.attributesCache removeAllObjects];
-        [self.columnHeights removeAllObjects];
     }
     [super invalidateLayoutWithContext:context];
 }
@@ -143,12 +165,19 @@
 - (void)invalidateLayoutWithReset:(BOOL)reset {
     if (reset) {
         [self.attributesCache removeAllObjects];
-        [self.columnHeights removeAllObjects];
     }
     [self invalidateLayout];
 }
 
 #pragma mark - 内部计算
+
+- (CGFloat)currentColumnWidth {
+    UIEdgeInsets insets = self.sectionInset;
+    CGFloat usable = CGRectGetWidth(self.collectionView.bounds) - insets.left - insets.right;
+    NSInteger columns = self.columnCount;
+    CGFloat spacing = self.interitemSpacing * (columns - 1);
+    return (usable - spacing) / columns;
+}
 
 - (NSInteger)resolvedColumnCountForSection:(NSInteger)section {
     if ([self.delegate respondsToSelector:@selector(collectionView:layout:numberOfColumnsInSection:)]) {
@@ -157,54 +186,11 @@
     return MAX(1, self.columnCount);
 }
 
-- (CGFloat)resolvedLineSpacingForSection:(NSInteger)section {
-    if ([self.delegate respondsToSelector:@selector(collectionView:layout:minimumLineSpacingForSection:)]) {
-        return [self.delegate collectionView:self.collectionView layout:self minimumLineSpacingForSection:section];
-    }
-    return self.lineSpacing;
-}
-
-- (CGFloat)resolvedInteritemSpacingForSection:(NSInteger)section {
-    if ([self.delegate respondsToSelector:@selector(collectionView:layout:minimumInteritemSpacingForSection:)]) {
-        return [self.delegate collectionView:self.collectionView layout:self minimumInteritemSpacingForSection:section];
-    }
-    return self.interitemSpacing;
-}
-
 - (UIEdgeInsets)resolvedInsetForSection:(NSInteger)section {
     if ([self.delegate respondsToSelector:@selector(collectionView:layout:insetForSectionAtIndex:)]) {
         return [self.delegate collectionView:self.collectionView layout:self insetForSectionAtIndex:section];
     }
     return self.sectionInset;
-}
-
-- (CGFloat)heightForIndexPath:(NSIndexPath *)indexPath itemWidth:(CGFloat)itemWidth {
-    if ([self.delegate respondsToSelector:@selector(collectionView:layout:heightForItemAtIndexPath:itemWidth:)]) {
-        return [self.delegate collectionView:self.collectionView layout:self
-                heightForItemAtIndexPath:indexPath itemWidth:itemWidth];
-    }
-    return itemWidth;
-}
-
-- (NSInteger)shortestColumnIndex {
-    NSInteger shortest = 0;
-    CGFloat minHeight = CGFLOAT_MAX;
-    for (NSInteger i = 0; i < (NSInteger)self.columnHeights.count; i++) {
-        CGFloat height = [self.columnHeights[i] doubleValue];
-        if (height < minHeight) {
-            minHeight = height;
-            shortest = i;
-        }
-    }
-    return shortest;
-}
-
-- (CGFloat)lastColumnHeight {
-    CGFloat maxHeight = 0;
-    for (NSNumber *height in self.columnHeights) {
-        maxHeight = MAX(maxHeight, height.doubleValue);
-    }
-    return maxHeight;
 }
 
 @end

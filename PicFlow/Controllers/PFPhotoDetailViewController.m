@@ -4,6 +4,7 @@
 //
 
 #import "PFPhotoDetailViewController.h"
+#import "../Views/PFArtworkRenderer.h"
 #import "../Utils/PFImageLoader.h"
 #import "../Utils/PFLog.h"
 
@@ -94,13 +95,23 @@
 
 - (void)loadImage {
     [self.spinner startAnimating];
-    NSString *cacheKey = [NSString stringWithFormat:@"origin-%@", self.item.identifier];
-    NSURL *url = self.item.originURL ?: [self.item thumbnailURLWithWidth:800.0];
+
+    // 详情页用更大的目标宽度渲染，保证清晰度
+    PFPhotoItem *detailItem = [PFPhotoItem itemAtCatalogIndex:self.item.catalogIndex];
+    if (!detailItem) {
+        detailItem = self.item;
+    }
+    detailItem.pixelWidth = 1200.0;
+    detailItem.pixelHeight = 1200.0 * [self.item aspectRatio];
+    detailItem.source = self.item.source;
+    detailItem.identifier = self.item.identifier;
+
+    NSString *cacheKey = [NSString stringWithFormat:@"detail-%@", self.item.identifier];
 
     __weak typeof(self) weakSelf = self;
-    self.loadToken = [[PFImageLoader sharedLoader] loadImageWithURL:url
-                                                          cacheKey:cacheKey
-                                                         completion:^(UIImage *image) {
+    self.loadToken = [[PFImageLoader sharedLoader] loadImageForItem:detailItem
+                                                            cacheKey:cacheKey
+                                                           completion:^(UIImage *image) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
         if (!strongSelf) {
             return;
@@ -108,8 +119,7 @@
         [strongSelf.spinner stopAnimating];
         strongSelf.imageView.image = image;
         if (image) {
-            strongSelf.imageView.frame = CGRectMake(0, 0,
-                                                    image.size.width, image.size.height);
+            strongSelf.imageView.frame = CGRectMake(0, 0, image.size.width, image.size.height);
             strongSelf.scrollView.contentSize = image.size;
         } else {
             PFLogWarning(@"详情图加载失败 id=%@", strongSelf.item.identifier);

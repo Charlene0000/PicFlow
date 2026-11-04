@@ -170,6 +170,56 @@ NSString * const PFNetworkErrorDomain = @"com.picflow.network";
     return task;
 }
 
+#pragma mark - 二进制下载
+
+- (NSURLSessionDataTask *)GETData:(NSString *)urlString
+                           success:(void (^)(NSData *data))success
+                           failure:(PFNetworkFailureBlock)failure {
+    NSURL *url = [self buildURLWithString:urlString parameters:nil];
+    if (!url) {
+        if (failure) {
+            failure([PFNetworkError errorWithCode:PFNetworkErrorCodeBadURL
+                                      description:@"请求地址不合法"
+                                  underlyingError:nil]);
+        }
+        return nil;
+    }
+
+    PFLogDebug(@"→ GET(binary) %@", url.absoluteString);
+
+    NSURLSessionDataTask *task =
+    [self.session dataTaskWithURL:url
+                completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (error) {
+                NSError *translated = [PFNetworkError errorFromUnderlying:error];
+                PFLogError(@"← FAIL(binary) %@ | %@", url.path, translated.localizedDescription);
+                if (failure) { failure(translated); }
+                return;
+            }
+            NSHTTPURLResponse *http = (NSHTTPURLResponse *)response;
+            if (http.statusCode < 200 || http.statusCode >= 300) {
+                NSError *err = [PFNetworkError errorWithCode:PFNetworkErrorCodeBadResponse
+                                                 description:[NSString stringWithFormat:@"服务器返回异常状态码 %ld", (long)http.statusCode]
+                                             underlyingError:nil];
+                if (failure) { failure(err); }
+                return;
+            }
+            if (data.length == 0) {
+                NSError *err = [PFNetworkError errorWithCode:PFNetworkErrorCodeEmptyData
+                                                 description:@"服务器返回空数据"
+                                             underlyingError:nil];
+                if (failure) { failure(err); }
+                return;
+            }
+            PFLogDebug(@"← OK(binary) %@ | %lu bytes", url.path, (unsigned long)data.length);
+            if (success) { success(data); }
+        });
+    }];
+    [task resume];
+    return task;
+}
+
 #pragma mark - URL
 
 - (nullable NSURL *)buildURLWithString:(NSString *)urlString
