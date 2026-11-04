@@ -1,0 +1,400 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8D496363A1DB6F9C44D8994A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F672DDA93D2FCD6DE1A560BA /* AppDelegate.m */; };
+		293582B3AA0F07DD422A2192 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7557C6F28427CBF3CC4FFA12 /* SceneDelegate.m */; };
+		AFB10890966EE2D5359E7538 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 69F27489AE5408CA9EF6CF77 /* main.m */; };
+		8E3EBD357C6CCF8FE6F8A6F8 /* PFGalleryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6574B1F3EAE0319D757B7833 /* PFGalleryViewController.m */; };
+		F3C417C11887C9C6382120FE /* PFPhotoDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A714754A0C2428A984E923A /* PFPhotoDetailViewController.m */; };
+		D9E7482A69B2A2E8517E3019 /* PFPhotoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 165BF64425CBF22A27006773 /* PFPhotoItem.m */; };
+		057D1738C14B6663793BC60F /* PFNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F3979840BEEF8EA82F8CB97E /* PFNetworkManager.m */; };
+		1B0EB4AA20C7FFF511F48FA1 /* PFImageCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DA895A229DE8EFB4E50E06 /* PFImageCache.m */; };
+		78924DD0534E6BF5B96A8252 /* PFImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B9844D75A5E446FF65BDC40 /* PFImageLoader.m */; };
+		FABA06626AFB8249695A1B06 /* PFLog.m in Sources */ = {isa = PBXBuildFile; fileRef = AE7C72BD281EE4641FC4759D /* PFLog.m */; };
+		64F96206A2E614A7AC41D868 /* PFGalleryViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E4E07B7CE83FACBA2F9678 /* PFGalleryViewModel.m */; };
+		CF63F368F1E1AFF135C245F7 /* PFPhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E1F567CF73EAAACE048B4A8 /* PFPhotoCell.m */; };
+		2C8B00F1EE05DDD2E9E2C289 /* PFWaterfallLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E020F6D0F5854FE62B47D2E /* PFWaterfallLayout.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		F672DDA93D2FCD6DE1A560BA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "AppDelegate.m"; sourceTree = "<group>"; };
+		7557C6F28427CBF3CC4FFA12 /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "SceneDelegate.m"; sourceTree = "<group>"; };
+		69F27489AE5408CA9EF6CF77 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "main.m"; sourceTree = "<group>"; };
+		6574B1F3EAE0319D757B7833 /* PFGalleryViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFGalleryViewController.m"; sourceTree = "<group>"; };
+		1A714754A0C2428A984E923A /* PFPhotoDetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFPhotoDetailViewController.m"; sourceTree = "<group>"; };
+		165BF64425CBF22A27006773 /* PFPhotoItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFPhotoItem.m"; sourceTree = "<group>"; };
+		F3979840BEEF8EA82F8CB97E /* PFNetworkManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFNetworkManager.m"; sourceTree = "<group>"; };
+		94DA895A229DE8EFB4E50E06 /* PFImageCache.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFImageCache.m"; sourceTree = "<group>"; };
+		0B9844D75A5E446FF65BDC40 /* PFImageLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFImageLoader.m"; sourceTree = "<group>"; };
+		AE7C72BD281EE4641FC4759D /* PFLog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFLog.m"; sourceTree = "<group>"; };
+		F4E4E07B7CE83FACBA2F9678 /* PFGalleryViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFGalleryViewModel.m"; sourceTree = "<group>"; };
+		7E1F567CF73EAAACE048B4A8 /* PFPhotoCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFPhotoCell.m"; sourceTree = "<group>"; };
+		5E020F6D0F5854FE62B47D2E /* PFWaterfallLayout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFWaterfallLayout.m"; sourceTree = "<group>"; };
+		E5BE9FB2DFE7939192E6CA69 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AppDelegate.h"; sourceTree = "<group>"; };
+		1BED01E8961F4AA47422B9DF /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SceneDelegate.h"; sourceTree = "<group>"; };
+		ED0B08E481FEAB2E922ED4CC /* PFGalleryViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFGalleryViewController.h"; sourceTree = "<group>"; };
+		B4E38CC2B946591E0E77F358 /* PFPhotoDetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFPhotoDetailViewController.h"; sourceTree = "<group>"; };
+		42DC29CABA27451BDA75B15D /* PFPhotoItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFPhotoItem.h"; sourceTree = "<group>"; };
+		636511A7376E126642869241 /* PFNetworkManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFNetworkManager.h"; sourceTree = "<group>"; };
+		402D8730E5BA648999AE0394 /* PFImageCache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFImageCache.h"; sourceTree = "<group>"; };
+		72FED109A5D20B22C9A4A45C /* PFImageLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFImageLoader.h"; sourceTree = "<group>"; };
+		24AFE429102FDE70550A852D /* PFLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFLog.h"; sourceTree = "<group>"; };
+		0E28F9667F2049D012D1AE55 /* PFGalleryViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFGalleryViewModel.h"; sourceTree = "<group>"; };
+		70DBAEF762BC54BA44049263 /* PFPhotoCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFPhotoCell.h"; sourceTree = "<group>"; };
+		735EFEC9D5C02C322379A5FB /* PFWaterfallLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFWaterfallLayout.h"; sourceTree = "<group>"; };
+		0A943895BBEE33A33C829022 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info.plist"; sourceTree = "<group>"; };
+		12501C62F38DC02830624DAD /* PicFlow.app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PicFlow.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6DC1200096FBE21354D41A4C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7D0010F9ECEDA9CED5282436 /* PicFlow */ = {
+			isa = PBXGroup;
+			children = (
+				4EFF977416B7E79998BE5DA4 /* Controllers */,
+				E4D21C4BAEC8DAB2E8E32A86 /* Models */,
+				6FB616E60BFF6AC69AF1BA43 /* Network */,
+				24EFE859602F028EC694ECE5 /* Resources */,
+				4A522D9C8F44AFCDC105D4DC /* Utils */,
+				98E32E95D3724DF123ECAC72 /* ViewModels */,
+				438DAF22813140E953F7A102 /* Views */,
+				E5BE9FB2DFE7939192E6CA69 /* AppDelegate.h */,
+				F672DDA93D2FCD6DE1A560BA /* AppDelegate.m */,
+				1BED01E8961F4AA47422B9DF /* SceneDelegate.h */,
+				7557C6F28427CBF3CC4FFA12 /* SceneDelegate.m */,
+				69F27489AE5408CA9EF6CF77 /* main.m */,
+			);
+			name = "PicFlow";
+			sourceTree = "<group>";
+		};
+		4EFF977416B7E79998BE5DA4 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				ED0B08E481FEAB2E922ED4CC /* PFGalleryViewController.h */,
+				6574B1F3EAE0319D757B7833 /* PFGalleryViewController.m */,
+				B4E38CC2B946591E0E77F358 /* PFPhotoDetailViewController.h */,
+				1A714754A0C2428A984E923A /* PFPhotoDetailViewController.m */,
+			);
+			name = "Controllers";
+			sourceTree = "<group>";
+		};
+		E4D21C4BAEC8DAB2E8E32A86 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				42DC29CABA27451BDA75B15D /* PFPhotoItem.h */,
+				165BF64425CBF22A27006773 /* PFPhotoItem.m */,
+			);
+			name = "Models";
+			sourceTree = "<group>";
+		};
+		6FB616E60BFF6AC69AF1BA43 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				636511A7376E126642869241 /* PFNetworkManager.h */,
+				F3979840BEEF8EA82F8CB97E /* PFNetworkManager.m */,
+			);
+			name = "Network";
+			sourceTree = "<group>";
+		};
+		24EFE859602F028EC694ECE5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0A943895BBEE33A33C829022 /* Info.plist */,
+			);
+			name = "Resources";
+			sourceTree = "<group>";
+		};
+		4A522D9C8F44AFCDC105D4DC /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				402D8730E5BA648999AE0394 /* PFImageCache.h */,
+				94DA895A229DE8EFB4E50E06 /* PFImageCache.m */,
+				72FED109A5D20B22C9A4A45C /* PFImageLoader.h */,
+				0B9844D75A5E446FF65BDC40 /* PFImageLoader.m */,
+				24AFE429102FDE70550A852D /* PFLog.h */,
+				AE7C72BD281EE4641FC4759D /* PFLog.m */,
+			);
+			name = "Utils";
+			sourceTree = "<group>";
+		};
+		98E32E95D3724DF123ECAC72 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				0E28F9667F2049D012D1AE55 /* PFGalleryViewModel.h */,
+				F4E4E07B7CE83FACBA2F9678 /* PFGalleryViewModel.m */,
+			);
+			name = "ViewModels";
+			sourceTree = "<group>";
+		};
+		438DAF22813140E953F7A102 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				70DBAEF762BC54BA44049263 /* PFPhotoCell.h */,
+				7E1F567CF73EAAACE048B4A8 /* PFPhotoCell.m */,
+				735EFEC9D5C02C322379A5FB /* PFWaterfallLayout.h */,
+				5E020F6D0F5854FE62B47D2E /* PFWaterfallLayout.m */,
+			);
+			name = "Views";
+			sourceTree = "<group>";
+		};
+		5CDDFEF86250A22941668A7D = {
+			isa = PBXGroup;
+			children = (
+				7D0010F9ECEDA9CED5282436 /* PicFlow */,
+				8F0EDBE08896F3DE8800039A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8F0EDBE08896F3DE8800039A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				12501C62F38DC02830624DAD /* PicFlow.app.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F6CFF92FBA9C4348FF978476 /* PicFlow */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F350B43FD5B3176009BBBA04 /* Build configuration list for PBXNativeTarget "PicFlow" */;
+			buildPhases = (
+				BDAAF4A22365A1ECD028DF68 /* Sources */,
+				6DC1200096FBE21354D41A4C /* Frameworks */,
+				95598A4426523D3116C19933 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PicFlow;
+			productName = PicFlow;
+			productReference = 12501C62F38DC02830624DAD /* PicFlow.app.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6A5F59DE1CE910EE24B63B8A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					F6CFF92FBA9C4348FF978476 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = 0C0E4A4B6CCD92779E2FC256 /* Build configuration list for PBXProject "PicFlow" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 5CDDFEF86250A22941668A7D;
+			productRefGroup = 8F0EDBE08896F3DE8800039A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F6CFF92FBA9C4348FF978476 /* PicFlow */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		95598A4426523D3116C19933 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		BDAAF4A22365A1ECD028DF68 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D496363A1DB6F9C44D8994A /* AppDelegate.m in Sources */,
+				293582B3AA0F07DD422A2192 /* SceneDelegate.m in Sources */,
+				AFB10890966EE2D5359E7538 /* main.m in Sources */,
+				8E3EBD357C6CCF8FE6F8A6F8 /* PFGalleryViewController.m in Sources */,
+				F3C417C11887C9C6382120FE /* PFPhotoDetailViewController.m in Sources */,
+				D9E7482A69B2A2E8517E3019 /* PFPhotoItem.m in Sources */,
+				057D1738C14B6663793BC60F /* PFNetworkManager.m in Sources */,
+				1B0EB4AA20C7FFF511F48FA1 /* PFImageCache.m in Sources */,
+				78924DD0534E6BF5B96A8252 /* PFImageLoader.m in Sources */,
+				FABA06626AFB8249695A1B06 /* PFLog.m in Sources */,
+				64F96206A2E614A7AC41D868 /* PFGalleryViewModel.m in Sources */,
+				CF63F368F1E1AFF135C245F7 /* PFPhotoCell.m in Sources */,
+				2C8B00F1EE05DDD2E9E2C289 /* PFWaterfallLayout.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		137F1033432AA9FBB62DD49E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+			};
+			name = Debug;
+		};
+		B84F09F0612CE6599C8CCF20 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		864CEC92FC191BA93F022455 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = PicFlow/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.picflow.PicFlow;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8EACB8E3D2F4F137BE606806 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = PicFlow/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.picflow.PicFlow;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0C0E4A4B6CCD92779E2FC256 /* Build configuration list for PBXProject \"PicFlow\" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				137F1033432AA9FBB62DD49E /* Debug */,
+				B84F09F0612CE6599C8CCF20 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F350B43FD5B3176009BBBA04 /* Build configuration list for PBXNativeTarget \"PicFlow\" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				864CEC92FC191BA93F022455 /* Debug */,
+				8EACB8E3D2F4F137BE606806 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6A5F59DE1CE910EE24B63B8A /* Project object */;
+}
