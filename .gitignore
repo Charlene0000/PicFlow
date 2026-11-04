@@ -1,0 +1,24 @@
+# ---- Xcode ----
+build/
+DerivedData/
+*.xcuserstate
+*.xcuserdatad/
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# ---- macOS ----
+.DS_Store
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+
+# ---- 运行时产物 ----
+*.log
+*.pcap
