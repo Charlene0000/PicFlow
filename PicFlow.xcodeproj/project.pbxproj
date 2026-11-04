@@ -18,8 +18,14 @@
 		78924DD0534E6BF5B96A8252 /* PFImageLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B9844D75A5E446FF65BDC40 /* PFImageLoader.m */; };
 		FABA06626AFB8249695A1B06 /* PFLog.m in Sources */ = {isa = PBXBuildFile; fileRef = AE7C72BD281EE4641FC4759D /* PFLog.m */; };
 		64F96206A2E614A7AC41D868 /* PFGalleryViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F4E4E07B7CE83FACBA2F9678 /* PFGalleryViewModel.m */; };
+		5EC24D1354AF3CDB0F485942 /* PFArtworkRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 66C9469C44DC111D061657B1 /* PFArtworkRenderer.m */; };
 		CF63F368F1E1AFF135C245F7 /* PFPhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 7E1F567CF73EAAACE048B4A8 /* PFPhotoCell.m */; };
 		2C8B00F1EE05DDD2E9E2C289 /* PFWaterfallLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E020F6D0F5854FE62B47D2E /* PFWaterfallLayout.m */; };
+		6587A197E6E1A7191216AC08 /* picflow_cache.c in Sources */ = {isa = PBXBuildFile; fileRef = 0173896CC6D0FD518A63453C /* picflow_cache.c */; };
+		19F251A34838C67387268AA3 /* picflow_catalog.c in Sources */ = {isa = PBXBuildFile; fileRef = 53FDEA9589DE86142CF55ADA /* picflow_catalog.c */; };
+		C8E41ED0B08F055F52B22E5E /* picflow_layout.c in Sources */ = {isa = PBXBuildFile; fileRef = 2D1FF426DBF0F0118350A3D0 /* picflow_layout.c */; };
+		910D52DC521CC5F792EE00A0 /* picflow_paging.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AF9CA387E44A657B6A03C18 /* picflow_paging.c */; };
+		E50BFE12CC224731CAA0E2F0 /* picflow_palette.c in Sources */ = {isa = PBXBuildFile; fileRef = A521E7BFCD86C5B8C4843773 /* picflow_palette.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,8 +40,14 @@
 		0B9844D75A5E446FF65BDC40 /* PFImageLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFImageLoader.m"; sourceTree = "<group>"; };
 		AE7C72BD281EE4641FC4759D /* PFLog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFLog.m"; sourceTree = "<group>"; };
 		F4E4E07B7CE83FACBA2F9678 /* PFGalleryViewModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFGalleryViewModel.m"; sourceTree = "<group>"; };
+		66C9469C44DC111D061657B1 /* PFArtworkRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFArtworkRenderer.m"; sourceTree = "<group>"; };
 		7E1F567CF73EAAACE048B4A8 /* PFPhotoCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFPhotoCell.m"; sourceTree = "<group>"; };
 		5E020F6D0F5854FE62B47D2E /* PFWaterfallLayout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "PFWaterfallLayout.m"; sourceTree = "<group>"; };
+		0173896CC6D0FD518A63453C /* picflow_cache.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "picflow_cache.c"; sourceTree = "<group>"; };
+		53FDEA9589DE86142CF55ADA /* picflow_catalog.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "picflow_catalog.c"; sourceTree = "<group>"; };
+		2D1FF426DBF0F0118350A3D0 /* picflow_layout.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "picflow_layout.c"; sourceTree = "<group>"; };
+		6AF9CA387E44A657B6A03C18 /* picflow_paging.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "picflow_paging.c"; sourceTree = "<group>"; };
+		A521E7BFCD86C5B8C4843773 /* picflow_palette.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "picflow_palette.c"; sourceTree = "<group>"; };
 		E5BE9FB2DFE7939192E6CA69 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AppDelegate.h"; sourceTree = "<group>"; };
 		1BED01E8961F4AA47422B9DF /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SceneDelegate.h"; sourceTree = "<group>"; };
 		ED0B08E481FEAB2E922ED4CC /* PFGalleryViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFGalleryViewController.h"; sourceTree = "<group>"; };
@@ -46,8 +58,14 @@
 		72FED109A5D20B22C9A4A45C /* PFImageLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFImageLoader.h"; sourceTree = "<group>"; };
 		24AFE429102FDE70550A852D /* PFLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFLog.h"; sourceTree = "<group>"; };
 		0E28F9667F2049D012D1AE55 /* PFGalleryViewModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFGalleryViewModel.h"; sourceTree = "<group>"; };
+		E59188B6CCBA9B99DE2BCF4C /* PFArtworkRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFArtworkRenderer.h"; sourceTree = "<group>"; };
 		70DBAEF762BC54BA44049263 /* PFPhotoCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFPhotoCell.h"; sourceTree = "<group>"; };
 		735EFEC9D5C02C322379A5FB /* PFWaterfallLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PFWaterfallLayout.h"; sourceTree = "<group>"; };
+		EDED0B15CB8563A0C8ED44FA /* picflow_cache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "picflow_cache.h"; sourceTree = "<group>"; };
+		9D36945B297D3BE7E41C55FF /* picflow_catalog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "picflow_catalog.h"; sourceTree = "<group>"; };
+		8572A505878477BCA629AA10 /* picflow_layout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "picflow_layout.h"; sourceTree = "<group>"; };
+		81AE41566E21D02C037F8AFA /* picflow_paging.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "picflow_paging.h"; sourceTree = "<group>"; };
+		8BD188A0A7E8B4C145A6D85F /* picflow_palette.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "picflow_palette.h"; sourceTree = "<group>"; };
 		0A943895BBEE33A33C829022 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info.plist"; sourceTree = "<group>"; };
 		12501C62F38DC02830624DAD /* PicFlow.app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PicFlow.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -144,6 +162,8 @@
 		438DAF22813140E953F7A102 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				E59188B6CCBA9B99DE2BCF4C /* PFArtworkRenderer.h */,
+				66C9469C44DC111D061657B1 /* PFArtworkRenderer.m */,
 				70DBAEF762BC54BA44049263 /* PFPhotoCell.h */,
 				7E1F567CF73EAAACE048B4A8 /* PFPhotoCell.m */,
 				735EFEC9D5C02C322379A5FB /* PFWaterfallLayout.h */,
@@ -152,10 +172,28 @@
 			name = "Views";
 			sourceTree = "<group>";
 		};
+		DA3EB179D6EE613492F299B1 /* core */ = {
+			isa = PBXGroup;
+			children = (
+				0173896CC6D0FD518A63453C /* picflow_cache.c */,
+				EDED0B15CB8563A0C8ED44FA /* picflow_cache.h */,
+				53FDEA9589DE86142CF55ADA /* picflow_catalog.c */,
+				9D36945B297D3BE7E41C55FF /* picflow_catalog.h */,
+				2D1FF426DBF0F0118350A3D0 /* picflow_layout.c */,
+				8572A505878477BCA629AA10 /* picflow_layout.h */,
+				6AF9CA387E44A657B6A03C18 /* picflow_paging.c */,
+				81AE41566E21D02C037F8AFA /* picflow_paging.h */,
+				A521E7BFCD86C5B8C4843773 /* picflow_palette.c */,
+				8BD188A0A7E8B4C145A6D85F /* picflow_palette.h */,
+			);
+			name = "core";
+			sourceTree = "<group>";
+		};
 		5CDDFEF86250A22941668A7D = {
 			isa = PBXGroup;
 			children = (
 				7D0010F9ECEDA9CED5282436 /* PicFlow */,
+				DA3EB179D6EE613492F299B1 /* core */,
 				8F0EDBE08896F3DE8800039A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -246,8 +284,14 @@
 				78924DD0534E6BF5B96A8252 /* PFImageLoader.m in Sources */,
 				FABA06626AFB8249695A1B06 /* PFLog.m in Sources */,
 				64F96206A2E614A7AC41D868 /* PFGalleryViewModel.m in Sources */,
+				5EC24D1354AF3CDB0F485942 /* PFArtworkRenderer.m in Sources */,
 				CF63F368F1E1AFF135C245F7 /* PFPhotoCell.m in Sources */,
 				2C8B00F1EE05DDD2E9E2C289 /* PFWaterfallLayout.m in Sources */,
+				6587A197E6E1A7191216AC08 /* picflow_cache.c in Sources */,
+				19F251A34838C67387268AA3 /* picflow_catalog.c in Sources */,
+				C8E41ED0B08F055F52B22E5E /* picflow_layout.c in Sources */,
+				910D52DC521CC5F792EE00A0 /* picflow_paging.c in Sources */,
+				E50BFE12CC224731CAA0E2F0 /* picflow_palette.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
