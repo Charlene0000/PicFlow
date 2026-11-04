@@ -7,7 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+// 只引入 CoreGraphics 取 CGFloat，不引入 UIKit —— 保证 Model 层不与 UI 框架耦合，
+// ViewModel 因此可以在任意环境下（甚至单元测试中）直接使用。
+#import <CoreGraphics/CoreGraphics.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
