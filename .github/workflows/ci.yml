@@ -8,8 +8,6 @@
 #      证明跨平台可移植性 + 算法正确性有持续保障（每次 push 都跑）。
 #   2. ios-build —— 在 macOS runner 上用真实 Xcode 编译 iOS 工程。
 #      证明 ObjC + UIKit 代码能编译、能打包（产出 .app 产物）。
-#
-# 这两条流水线合起来，等价于「本地没有 Mac 也能拿到 Xcode 编译的证据」。
 
 name: PicFlow CI
 
@@ -33,7 +31,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 将 windows-latest 固定为 windows-2022，避开最新版镜像带来的环境变动（如 MinGW 路径异常）
+        # 固定 windows-2022，避开最新版镜像环境变动
         os: [ubuntu-latest, windows-2022, macos-latest]
     steps:
       - uses: actions/checkout@v4
@@ -69,7 +67,8 @@ jobs:
   # ---------- iOS 真机编译（macOS runner） ----------
   ios-build:
     name: iOS 工程编译 (Xcode ${{ matrix.xcode }})
-    runs-on: macos-latest
+    # 固定使用 macOS 14，保证底层环境稳定
+    runs-on: macos-14
     strategy:
       fail-fast: false
       matrix:
@@ -77,8 +76,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: 选择 Xcode 版本
-        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.xcode }}.app
+      # 使用官方工具自动下载并切换 Xcode，彻底告别路径报错
+      - name: 设置 Xcode 版本
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: ${{ matrix.xcode }}
 
       - name: 打印工具链版本
         run: |
@@ -90,7 +92,7 @@ jobs:
 
       - name: 编译 iOS 工程（模拟器目标，无需签名）
         run: |
-          # 将 -scheme 改为 -target，并移除 -destination，彻底避开缺失 Shared Scheme 的报错
+          # 使用 -target 直接编译，避开缺失 Shared Scheme 的报错
           xcodebuild \
             -project PicFlow.xcodeproj \
             -target PicFlow \
@@ -103,6 +105,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-build-${{ matrix.xcode }}
-          # 使用 -target 编译时，产物通常直接输出在 build/Debug-iphonesimulator 目录
           path: build/Debug-iphonesimulator/PicFlow.app
           if-no-files-found: ignore
