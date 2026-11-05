@@ -1,14 +1,4 @@
 # PicFlow CI
-#
-# 解决的问题：项目开发机是 Windows，没有 macOS / Xcode，
-# 但 iOS 项目必须能在 Xcode 里编译。
-#
-# 方案：分两条流水线
-#   1. core-tests —— 在 Ubuntu / Windows / macOS 三个平台编译并运行 C 核心测试。
-#      证明跨平台可移植性 + 算法正确性有持续保障（每次 push 都跑）。
-#   2. ios-build —— 在 macOS runner 上用真实 Xcode 编译 iOS 工程。
-#      证明 ObjC + UIKit 代码能编译、能打包（产出 .app 产物）。
-
 name: PicFlow CI
 
 on:
@@ -18,7 +8,6 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# 增加全局环境变量，彻底解决 Windows 上的 Python 编码问题
 env:
   PYTHONUTF8: 1
   PYTHONIOENCODING: utf-8
@@ -31,23 +20,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # 固定 windows-2022，避开最新版镜像环境变动
         os: [ubuntu-latest, windows-2022, macos-latest]
     steps:
       - uses: actions/checkout@v4
-
       - name: 安装 Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: 编译并运行 C 单元测试
         run: python tools/run_tests.py
-
       - name: 编译并运行图库服务集成测试
         run: python tests/test_mock_server.py
-
-      - name: 生成布局可视化（Linux/macOS 额外产出 SVG 供人工检查）
+      - name: 生成布局可视化
         if: matrix.os != 'windows-2022'
         run: |
           mkdir -p build/preview
@@ -56,7 +40,6 @@ jobs:
              -o build/preview/preview_svg -lm
           ./build/preview/preview_svg build/preview/iphone.svg 2 375 24
           ./build/preview/preview_svg build/preview/ipad.svg 3 768 24
-
       - name: 上传布局可视化产物
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v4
@@ -67,7 +50,6 @@ jobs:
   # ---------- iOS 真机编译（macOS runner） ----------
   ios-build:
     name: iOS 工程编译 (Xcode ${{ matrix.xcode }})
-    # 固定使用 macOS 14，保证底层环境稳定
     runs-on: macos-14
     strategy:
       fail-fast: false
@@ -76,23 +58,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 使用官方工具自动下载并切换 Xcode，彻底告别路径报错
       - name: 设置 Xcode 版本
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: ${{ matrix.xcode }}
 
-      - name: 打印工具链版本
+      # 【新增步骤】：修复路径问题，把 C 源文件拷贝到根目录供 Xcode 寻找
+      - name: 移动 C 源文件到根目录
         run: |
-          xcodebuild -version
-          swift --version
+          cp core/*.c .
+          cp core/*.h .
 
       - name: 生成 Xcode 工程
         run: python3 tools/generate_project.py
 
       - name: 编译 iOS 工程（模拟器目标，无需签名）
         run: |
-          # 使用 -target 直接编译，避开缺失 Shared Scheme 的报错
           xcodebuild \
             -project PicFlow.xcodeproj \
             -target PicFlow \
