@@ -31,21 +31,6 @@ jobs:
         run: python tools/run_tests.py
       - name: 编译并运行图库服务集成测试
         run: python tests/test_mock_server.py
-      - name: 生成布局可视化
-        if: matrix.os != 'windows-2022'
-        run: |
-          mkdir -p build/preview
-          cc -std=c99 -O1 -I core tools/preview/preview_svg.c \
-             core/picflow_layout.c core/picflow_palette.c core/picflow_catalog.c \
-             -o build/preview/preview_svg -lm
-          ./build/preview/preview_svg build/preview/iphone.svg 2 375 24
-          ./build/preview/preview_svg build/preview/ipad.svg 3 768 24
-      - name: 上传布局可视化产物
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: layout-preview
-          path: build/preview/*.svg
 
   # ---------- iOS 真机编译（macOS runner） ----------
   ios-build:
@@ -63,31 +48,39 @@ jobs:
         with:
           xcode-version: ${{ matrix.xcode }}
 
-      # 【关键修改】：把 C 代码和 ObjC 代码全部拷贝到 Xcode 期望的根目录
-      - name: 移动源码到根目录以修复路径错误
-        run: |
-          # 1. 拷贝 C 源文件
-          cp core/*.c .
-          cp core/*.h .
-          # 2. 拷贝 PicFlow 目录下的所有 ObjC 代码和资源
-          cp -R PicFlow/* .
+      # 【核心修复】：使用 XcodeGen 替代有 bug 的 Python 脚本
+      - name: 安装 XcodeGen
+        run: brew install xcodegen
 
-      - name: 生成 Xcode 工程
-        run: python3 tools/generate_project.py
-
-      - name: 编译 iOS 工程（模拟器目标，无需签名）
+      - name: 生成标准 Xcode 工程配置
         run: |
+          cat > project.yml << 'EOF'
+          name: PicFlow
+          options:
+            bundleIdPrefix: com.picflow
+            deploymentTarget:
+              iOS: "13.0"
+          targets:
+            PicFlow:
+              type: application
+              platform: iOS
+              sources:
+                - path: PicFlow
+                - path: core
+              settings:
+                base:
+                  INFOPLIST_FILE: PicFlow/Resources/Info.plist
+                  CODE_SIGNING_ALLOWED: NO
+                  GENERATE_INFOPLIST_FILE: NO
+          EOF
+
+      - name: 生成 Xcode 工程并编译
+        run: |
+          xcodegen generate
           xcodebuild \
             -project PicFlow.xcodeproj \
-            -target PicFlow \
+            -scheme PicFlow \
             -sdk iphonesimulator \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
             build
-
-      - name: 上传编译产物
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-build-${{ matrix.xcode }}
-          path: build/Debug-iphonesimulator/PicFlow.app
-          if-no-files-found: ignore
