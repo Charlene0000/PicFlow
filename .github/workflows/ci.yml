@@ -63,11 +63,14 @@ jobs:
         with:
           xcode-version: ${{ matrix.xcode }}
 
-      # 【新增步骤】：修复路径问题，把 C 源文件拷贝到根目录供 Xcode 寻找
-      - name: 移动 C 源文件到根目录
+      # 【关键修改】：把 C 代码和 ObjC 代码全部拷贝到 Xcode 期望的根目录
+      - name: 移动源码到根目录以修复路径错误
         run: |
+          # 1. 拷贝 C 源文件
           cp core/*.c .
           cp core/*.h .
+          # 2. 拷贝 PicFlow 目录下的所有 ObjC 代码和资源
+          cp -R PicFlow/* .
 
       - name: 生成 Xcode 工程
         run: python3 tools/generate_project.py
