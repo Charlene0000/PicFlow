@@ -11,6 +11,20 @@
 #import "../Utils/PFLog.h"
 #include "../../core/picflow_layout.h"
 
+static double PFHeightProviderCallback(void *context, int index) {
+    PFWaterfallLayout *layout = (__bridge PFWaterfallLayout *)context;
+    UICollectionView *cv = layout.collectionView;
+    if (!cv || index < 0 || index >= (NSInteger)[cv numberOfItemsInSection:0]) {
+        return 0.0;
+    }
+    NSIndexPath *indexPath = [NSIndexPath indexPathForItem:index inSection:0];
+    CGFloat columnWidth = [layout currentColumnWidth];
+    return (double)[layout.delegate collectionView:cv
+                                            layout:layout
+                          heightForItemAtIndexPath:indexPath
+                                          itemWidth:columnWidth];
+}
+
 @interface PFWaterfallLayout ()
 /// 缓存所有 item 的 layoutAttributes，避免每次滑动都重新算（性能关键）。
 @property (nonatomic, strong) NSMutableArray<UICollectionViewLayoutAttributes *> *attributesCache;
@@ -57,20 +71,8 @@
 
     // ---- 高度提供者：C 函数指针作为 context 传给 C 引擎 ----
     // C 引擎通过这个回调逐个询问高度，与 UICollectionViewLayoutDelegate 的语义一致。
-    // 注意：block 不捕获 self，只用 context 反解，避免不必要的引用关系。
-    PFItemHeightProvider provider = ^double (void *context, int index) {
-        PFWaterfallLayout *layout = (__bridge PFWaterfallLayout *)context;
-        UICollectionView *cv = layout.collectionView;
-        if (!cv || index < 0 || index >= (NSInteger)[cv numberOfItemsInSection:0]) {
-            return 0.0;
-        }
-        NSIndexPath *indexPath = [NSIndexPath indexPathForItem:index inSection:0];
-        CGFloat columnWidth = [layout currentColumnWidth];
-        return (double)[layout.delegate collectionView:cv
-                                                layout:layout
-                              heightForItemAtIndexPath:indexPath
-                                              itemWidth:columnWidth];
-    };
+    // 注意：这里必须使用 C 函数指针，而不是 Objective-C block。
+    PFItemHeightProvider provider = PFHeightProviderCallback;
 
     // ---- 组装 C 引擎配置 ----
     PFWaterfallConfig config;
