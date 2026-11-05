@@ -58,7 +58,7 @@ typedef void (^PFNetworkFailureBlock)(NSError *error);
                              parameters:(nullable NSDictionary<NSString *, id> *)parameters
                                 success:(PFNetworkSuccessBlock)success
                                 failure:(PFNetworkFailureBlock)failure
-                            cancelToken:(void (^ _Nullable)(void))cancelToken;
+                            cancelToken:(void (^ _Nullable)(void (^cancelAction)(void)))cancelToken;
 
 /// 下载二进制数据（图片二进制）。
 /// 与 JSON 接口分开，是为了避免「解析失败」这类只适用于 JSON 的错误处理
