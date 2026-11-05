@@ -20,6 +20,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# 增加全局环境变量，彻底解决 Windows 上的 Python 编码问题
+env:
+  PYTHONUTF8: 1
+  PYTHONIOENCODING: utf-8
+
 jobs:
   # ---------- C 核心测试：三大平台并行 ----------
   core-tests:
@@ -28,7 +33,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # 将 windows-latest 固定为 windows-2022，避开最新版镜像带来的环境变动（如 MinGW 路径异常）
+        os: [ubuntu-latest, windows-2022, macos-latest]
     steps:
       - uses: actions/checkout@v4
 
@@ -44,7 +50,7 @@ jobs:
         run: python tests/test_mock_server.py
 
       - name: 生成布局可视化（Linux/macOS 额外产出 SVG 供人工检查）
-        if: matrix.os != 'windows-latest'
+        if: matrix.os != 'windows-2022'
         run: |
           mkdir -p build/preview
           cc -std=c99 -O1 -I core tools/preview/preview_svg.c \
@@ -84,11 +90,11 @@ jobs:
 
       - name: 编译 iOS 工程（模拟器目标，无需签名）
         run: |
+          # 将 -scheme 改为 -target，并移除 -destination，彻底避开缺失 Shared Scheme 的报错
           xcodebuild \
             -project PicFlow.xcodeproj \
-            -scheme PicFlow \
+            -target PicFlow \
             -sdk iphonesimulator \
-            -destination 'generic/platform=iOS Simulator' \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
             build
@@ -97,5 +103,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-build-${{ matrix.xcode }}
+          # 使用 -target 编译时，产物通常直接输出在 build/Debug-iphonesimulator 目录
           path: build/Debug-iphonesimulator/PicFlow.app
           if-no-files-found: ignore
