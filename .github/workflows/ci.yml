@@ -13,7 +13,7 @@ env:
   PYTHONIOENCODING: utf-8
 
 jobs:
-  # ---------- C 核心测试：三大平台并行 ----------
+  # ---------- C 核心测试 ----------
   core-tests:
     name: C 核心测试 (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -32,7 +32,7 @@ jobs:
       - name: 编译并运行图库服务集成测试
         run: python tests/test_mock_server.py
 
-  # ---------- iOS 真机编译（macOS runner） ----------
+  # ---------- iOS 编译 ----------
   ios-build:
     name: iOS 工程编译 (Xcode ${{ matrix.xcode }})
     runs-on: macos-14
@@ -48,11 +48,10 @@ jobs:
         with:
           xcode-version: ${{ matrix.xcode }}
 
-      # 【核心修复】：使用 XcodeGen 替代有 bug 的 Python 脚本
       - name: 安装 XcodeGen
         run: brew install xcodegen
 
-      - name: 生成标准 Xcode 工程配置
+      - name: 用 XcodeGen 生成工程文件
         run: |
           cat > project.yml << 'EOF'
           name: PicFlow
@@ -60,6 +59,7 @@ jobs:
             bundleIdPrefix: com.picflow
             deploymentTarget:
               iOS: "13.0"
+            xcodeVersion: "15.0" # 【新增】：强制生成兼容 Xcode 15 的工程文件格式
           targets:
             PicFlow:
               type: application
@@ -73,10 +73,11 @@ jobs:
                   CODE_SIGNING_ALLOWED: NO
                   GENERATE_INFOPLIST_FILE: NO
           EOF
-
-      - name: 生成 Xcode 工程并编译
-        run: |
+          
           xcodegen generate
+
+      - name: 编译 iOS 工程
+        run: |
           xcodebuild \
             -project PicFlow.xcodeproj \
             -scheme PicFlow \
