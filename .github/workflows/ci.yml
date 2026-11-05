@@ -69,10 +69,10 @@ jobs:
           EOF
           xcodegen generate
 
-      # 【关键修复】：强制将工程文件格式降级为 Xcode 15 可识别的 56
+      # 【关键修复】：强制将工程文件 objectVersion 降级为 Xcode 15 可识别的 56
       - name: 降级工程文件格式以兼容 Xcode 15
         run: |
-          sed -i '' 's/objectVersion = 77;/objectVersion = 56;/' PicFlow.xcodeproj/project.pbxproj
+          sed -i '' -E 's/objectVersion = [0-9]+;/objectVersion = 56;/' PicFlow.xcodeproj/project.pbxproj
 
       - name: 编译 iOS 工程
         run: |

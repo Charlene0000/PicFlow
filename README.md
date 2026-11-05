@@ -213,7 +213,7 @@ typedef void (^PFNetworkFailureBlock)(NSError *error);
                              parameters:(nullable NSDictionary<NSString *, id> *)parameters
                                 success:(PFNetworkSuccessBlock)success
                                 failure:(PFNetworkFailureBlock)failure
-                            cancelToken:(void (^ _Nullable)(void))cancelToken;
+                            cancelToken:(void (^ _Nullable)(void (^cancelAction)(void)))cancelToken;
 @end
 ```
 
@@ -223,7 +223,7 @@ typedef void (^PFNetworkFailureBlock)(NSError *error);
                     parameters:(NSDictionary<NSString *, id> *)parameters
                        success:(PFNetworkSuccessBlock)success
                        failure:(PFNetworkFailureBlock)failure
-                   cancelToken:(void (^)(void))cancelToken {
+                   cancelToken:(void (^)(void (^cancelAction)(void)))cancelToken {
     NSURL *url = [self buildURLWithString:urlString parameters:parameters];
     if (!url) {
         PFLogError(@"URL 构造失败: %@", urlString);

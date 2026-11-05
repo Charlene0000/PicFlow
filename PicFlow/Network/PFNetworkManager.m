@@ -92,7 +92,7 @@ NSString * const PFNetworkErrorDomain = @"com.picflow.network";
                     parameters:(NSDictionary<NSString *, id> *)parameters
                        success:(PFNetworkSuccessBlock)success
                        failure:(PFNetworkFailureBlock)failure
-                   cancelToken:(void (^)(void))cancelToken {
+                   cancelToken:(void (^)(void (^cancelAction)(void)))cancelToken {
     NSURL *url = [self buildURLWithString:urlString parameters:parameters];
     if (!url) {
         PFLogError(@"URL 构造失败: %@", urlString);
