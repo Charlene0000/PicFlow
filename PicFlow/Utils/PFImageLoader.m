@@ -121,9 +121,9 @@ static NSString * const kPFImageLoaderDiskFolder = @"com.picflow.images";
         }
 
         [strongSelf.budgetLock lock];
-        BOOL allowed = pf_memory_budget_can_alloc(&strongSelf.budget, estimatedCost);
+        BOOL allowed = pf_memory_budget_can_alloc(&strongSelf->_budget, estimatedCost);
         if (allowed) {
-            pf_memory_budget_reserve(&strongSelf.budget, estimatedCost);
+            pf_memory_budget_reserve(&strongSelf->_budget, estimatedCost);
         }
         [strongSelf.budgetLock unlock];
 
@@ -144,7 +144,7 @@ static NSString * const kPFImageLoaderDiskFolder = @"com.picflow.images";
                                                             scale:scale];
         if (!image) {
             [strongSelf.budgetLock lock];
-            pf_memory_budget_release(&strongSelf.budget, estimatedCost);
+            pf_memory_budget_release(&strongSelf->_budget, estimatedCost);
             [strongSelf.budgetLock unlock];
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (completion) {
@@ -190,7 +190,7 @@ static NSString * const kPFImageLoaderDiskFolder = @"com.picflow.images";
                 [self loadRemoteFromNetworkURL:url cacheKey:cacheKey completion:completion];
                 return;
             }
-            [self.cacheImage:image key:cacheKey];
+            [self cacheImage:image key:cacheKey];
             if (completion) {
                 completion(image);
             }
@@ -217,7 +217,7 @@ static NSString * const kPFImageLoaderDiskFolder = @"com.picflow.images";
         }
         [strongSelf decodeImageWithData:data completion:^(UIImage *image) {
             if (image) {
-                [strongSelf.cacheImage:image key:cacheKey];
+                [strongSelf cacheImage:image key:cacheKey];
                 [strongSelf saveImageData:data forKey:cacheKey];
             }
             if (completion) {
@@ -266,7 +266,7 @@ static NSString * const kPFImageLoaderDiskFolder = @"com.picflow.images";
     [[PFImageCache sharedCache] storeImage:image forKey:key cost:cost];
 
     [self.budgetLock lock];
-    pf_memory_budget_reserve(&self.budget, cost);
+    pf_memory_budget_reserve(&self->_budget, cost);
     [self.budgetLock unlock];
 }
 
@@ -283,7 +283,7 @@ static NSString * const kPFImageLoaderDiskFolder = @"com.picflow.images";
 
 - (NSUInteger)estimatedMemoryUsage {
     [self.budgetLock lock];
-    size_t used = self.budget.reserved_bytes;
+    size_t used = self->_budget.reserved_bytes;
     [self.budgetLock unlock];
     return (NSUInteger)used;
 }
