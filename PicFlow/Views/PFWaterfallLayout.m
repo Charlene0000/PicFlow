@@ -11,6 +11,10 @@
 #import "../Utils/PFLog.h"
 #include "../../core/picflow_layout.h"
 
+@interface PFWaterfallLayout (PFCallbackAccess)
+- (CGFloat)currentColumnWidth;
+@end
+
 static double PFHeightProviderCallback(void *context, int index) {
     PFWaterfallLayout *layout = (__bridge PFWaterfallLayout *)context;
     UICollectionView *cv = layout.collectionView;
